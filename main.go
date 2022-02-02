@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type Options struct {
@@ -14,7 +15,7 @@ type Options struct {
 }
 
 func SearchVideo(searchWord string, options Options) {
-	Url, err := url.Parse("https://youtube.com/results")
+	Url, err := url.Parse("http://youtube.com/results")
 
 	if err != nil {
 		panic("The URL is incorrect!")
@@ -22,13 +23,15 @@ func SearchVideo(searchWord string, options Options) {
 
 	query := url.Values{}
 	query.Add("search_query", searchWord)
-	query.Add("hl", "en")
 	query.Add("sp", "EgIQAQ%253D%253D")
 
 	Url.RawQuery = query.Encode()
 
-	res, err := http.Get(Url.String())
+	req, err := http.NewRequest("GET", Url.String(), nil)
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0")
 
+	client := &http.Client{}
+	res, err := client.Do(req)
 	if err != nil {
 		panic("Something went wrong, the request cannot be sent to the URL!")
 	}
@@ -36,20 +39,18 @@ func SearchVideo(searchWord string, options Options) {
 	if res.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
+	bodyResp, err := io.ReadAll(res.Body)
+	html := string(bodyResp)
 
-	doc, err := goquery.NewDocumentFromReader(res.Body)
+	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
+	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
+	out := strings.Split(items, `},{"continuationItemRenderer":{`)[0]
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	doc.Find("div#contents").Each(func(index int, s *goquery.Selection) {
-		// The part of listing videos will be done
-	})
+	fmt.Println(out)
 }
 
 func main() {
-	SearchVideo("Hello world", Options{
+	SearchVideo("Duman eyvallah", Options{
 		limit: 10,
 	})
 }
