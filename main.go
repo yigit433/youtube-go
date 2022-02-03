@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -10,8 +11,8 @@ import (
 )
 
 type Options struct {
-	limit      int
-	safeSearch bool
+	Limit      int
+	SafeSearch bool
 }
 
 func SearchVideo(searchWord string, options Options) {
@@ -44,13 +45,20 @@ func SearchVideo(searchWord string, options Options) {
 
 	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
 	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
-	out := strings.Split(items, `},{"continuationItemRenderer":{`)[0]
+	var parsed = []byte(strings.Split(items, `},{"continuationItemRenderer":{`)[0])
 
-	fmt.Println(out)
+	var out map[string]interface{}
+	err = json.Unmarshal(parsed, &out)
+
+	if err != nil {
+		panic("Something went wrong, the problem was encountered while analyzing JSON!")
+	}
+
+	fmt.Println(out["contents"].([]interface{})[0].(map[string]interface{})["videoRenderer"])
 }
 
 func main() {
 	SearchVideo("Duman eyvallah", Options{
-		limit: 10,
+		Limit: 10,
 	})
 }
