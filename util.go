@@ -1,8 +1,7 @@
-package main
+package youtubego
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -10,12 +9,7 @@ import (
 	"strings"
 )
 
-type Options struct {
-	Limit      int
-	SafeSearch bool
-}
-
-func SearchVideo(searchWord string, options Options) {
+func CreateRequest(searchWord string) []Video {
 	Url, err := url.Parse("http://youtube.com/results")
 
 	if err != nil {
@@ -41,24 +35,40 @@ func SearchVideo(searchWord string, options Options) {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 	bodyResp, err := io.ReadAll(res.Body)
-	html := string(bodyResp)
-
-	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
-	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
-	var parsed = []byte(strings.Split(items, `},{"continuationItemRenderer":{`)[0])
+	html := []byte(ParseHTML(string(bodyResp)))
 
 	var out map[string]interface{}
-	err = json.Unmarshal(parsed, &out)
+	err = json.Unmarshal(html, &out)
 
 	if err != nil {
 		panic("Something went wrong, the problem was encountered while analyzing JSON!")
 	}
+	arr := out["contents"]
 
-	fmt.Println(out["contents"].([]interface{})[0].(map[string]interface{})["videoRenderer"])
+	output := make([]Video, len(arr.([]interface{})))
+
+	for i := 0; len(arr.([]interface{})) > i; i++ {
+		pureData := arr.([]interface{})[i].(map[string]interface{})["videoRenderer"]
+
+		output[i] = ParseVideo(pureData)
+	}
+
+	return output
 }
 
-func main() {
-	SearchVideo("Duman eyvallah", Options{
-		Limit: 10,
-	})
+func ParseHTML(html string) string {
+	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
+	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
+
+	return strings.Split(items, `},{"continuationItemRenderer":{`)[0]
+}
+
+func ParseVideo(data interface{}) Video {
+	var out Video
+
+	out = Video{
+		Id: data.(map[string]interface{})["videoId"].(string),
+	}
+
+	return out
 }
