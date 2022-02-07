@@ -1,5 +1,20 @@
 package youtubego
 
+type Thumbnail struct {
+	Id     string
+	Width  string
+	Height string
+	Url    string
+}
+
 type Video struct {
-	Id string
+	Thumbnail
+	Id    string
+	Title string
+	Url   string
+}
+
+type VideoParser struct {
+	Video
+	IsSuccess bool
 }

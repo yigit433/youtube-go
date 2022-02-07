@@ -43,14 +43,16 @@ func CreateRequest(searchWord string) []Video {
 	if err != nil {
 		panic("Something went wrong, the problem was encountered while analyzing JSON!")
 	}
-	arr := out["contents"]
+	arr := out["contents"].([]interface{})
+	output := []Video{}
 
-	output := make([]Video, len(arr.([]interface{})))
+	for i := 0; len(arr) > i; i++ {
+		sdata := arr[i].(map[string]interface{})["videoRenderer"]
+		parsedVideo := ParseVideo(sdata)
 
-	for i := 0; len(arr.([]interface{})) > i; i++ {
-		pureData := arr.([]interface{})[i].(map[string]interface{})["videoRenderer"]
-
-		output[i] = ParseVideo(pureData)
+		if parsedVideo.IsSuccess {
+			output = append(output, parsedVideo.Video)
+		}
 	}
 
 	return output
@@ -63,12 +65,30 @@ func ParseHTML(html string) string {
 	return strings.Split(items, `},{"continuationItemRenderer":{`)[0]
 }
 
-func ParseVideo(data map[string]interface{}) Video {
-	var out Video
+func ParseVideo(data interface{}) VideoParser {
+	if data != nil {
+		thumbnail := data.(map[string]interface{})["thumbnail"].(map[string]interface{})["thumbnails"].([]interface{})
 
-	out = Video{
-		Id: data["videoId"].(string),
+		var out VideoParser
+		out = VideoParser{
+			Video: Video{
+				Id:    data.(map[string]interface{})["videoId"].(string),
+				Title: data.(map[string]interface{})["title"].(map[string]interface{})["runs"].([]interface{})[0].(map[string]interface{})["text"].(string),
+				Url:   fmt.Sprintf("https://www.youtube.com/watch?v=%s", data.(map[string]interface{})["videoId"].(string)),
+				Thumbnail: Thumbnail{
+					Id:     data.(map[string]interface{})["videoId"].(string),
+					Url:    thumbnail[len(thumbnail)-1].(map[string]interface{})["url"].(string),
+					Width:  fmt.Sprintf("%v", thumbnail[len(thumbnail)-1].(map[string]interface{})["width"]),
+					Height: fmt.Sprintf("%v", thumbnail[len(thumbnail)-1].(map[string]interface{})["height"]),
+				},
+			},
+			IsSuccess: true,
+		}
+
+		return out
+	} else {
+		return VideoParser{
+			IsSuccess: false,
+		}
 	}
-
-	return out
 }
