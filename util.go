@@ -63,11 +63,11 @@ func ParseHTML(html string) string {
 	return strings.Split(items, `},{"continuationItemRenderer":{`)[0]
 }
 
-func ParseVideo(data interface{}) Video {
+func ParseVideo(data map[string]interface{}) Video {
 	var out Video
 
 	out = Video{
-		Id: data.(map[string]interface{})["videoId"].(string),
+		Id: data["videoId"].(string),
 	}
 
 	return out
