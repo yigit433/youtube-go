@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func CreateRequest(searchWord string) []Video {
+func CreateRequest(searchWord string, options SearchOptions) []SearchResult {
 	Url, err := url.Parse("http://youtube.com/results")
 
 	if err != nil {
@@ -19,7 +19,14 @@ func CreateRequest(searchWord string) []Video {
 
 	query := url.Values{}
 	query.Add("search_query", searchWord)
-	query.Add("sp", "EgIQAQ%253D%253D")
+
+	if strings.ToLower(options.Type) == "video" {
+		query.Add("sp", "EgIQAQ%253D%253D")
+	} else if strings.ToLower(options.Type) == "playlist" {
+		query.Add("sp", "EgIQAw%253D%253D")
+	} else if strings.ToLower(options.Type) == "channel" {
+		query.Add("sp", "EgIQAg%253D%253D")
+	}
 
 	Url.RawQuery = query.Encode()
 
@@ -36,7 +43,18 @@ func CreateRequest(searchWord string) []Video {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 	bodyResp, err := io.ReadAll(res.Body)
-	html := []byte(ParseHTML(string(bodyResp)))
+	if err != nil {
+		log.Fatalf("Cannot read the body stream.")
+	}
+
+	return ParseHTML(bodyResp, options.Limit)
+}
+
+func ParseHTML(html string, limit int) []SearchResult {
+	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
+	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
+	parsed := strings.Split(items, `},{"continuationItemRenderer":{`)[0]
+	html := []byte(ParseHTML(string(parsed)))
 
 	var out map[string]interface{}
 	err = json.Unmarshal(html, &out)
@@ -45,51 +63,37 @@ func CreateRequest(searchWord string) []Video {
 		panic("Something went wrong, the problem was encountered while analyzing JSON!")
 	}
 	arr := out["contents"].([]interface{})
-	output := []Video{}
+	output := []SearchResult{}
 
 	for i := 0; len(arr) > i; i++ {
-		sdata := arr[i].(map[string]interface{})["videoRenderer"]
-		parsedVideo := ParseVideo(sdata)
+		sdata := arr[i].(map[string]interface{})
 
-		if parsedVideo.IsSuccess {
-			output = append(output, parsedVideo.Video)
+		if sdata["videoRenderer"] {
+			parsed := ParseVideo(sdata["videoRenderer"])
+
+			if parsed.IsSuccess {
+				output = append(output, &SearchResult{
+					Video: parsed.Video,
+				})
+			}
+		} else if sdata["playlistRenderer"] {
+			parsed := ParsePlaylist(sdata["playlistRenderer"])
+
+			if parsed.IsSuccess {
+				output = append(output, &SearchResult{
+					Playlist: parsed.Playlist,
+				})
+			}
+		} else if sdata["channelRenderer"] {
+			parsed := ParseVideo(sdata["channelRenderer"])
+
+			if parsed.IsSuccess {
+				output = append(output, &SearchResult{
+					Channel: parsed.Channel,
+				})
+			}
 		}
 	}
 
 	return output
-}
-
-func ParseHTML(html string) string {
-	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
-	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
-
-	return strings.Split(items, `},{"continuationItemRenderer":{`)[0]
-}
-
-func ParseVideo(data interface{}) VideoParser {
-	if data != nil {
-		thumbnail := data.(map[string]interface{})["thumbnail"].(map[string]interface{})["thumbnails"].([]interface{})
-
-		var out VideoParser
-		out = VideoParser{
-			Video: Video{
-				Id:    data.(map[string]interface{})["videoId"].(string),
-				Title: data.(map[string]interface{})["title"].(map[string]interface{})["runs"].([]interface{})[0].(map[string]interface{})["text"].(string),
-				Url:   fmt.Sprintf("https://www.youtube.com/watch?v=%s", data.(map[string]interface{})["videoId"].(string)),
-				Thumbnail: Thumbnail{
-					Id:     data.(map[string]interface{})["videoId"].(string),
-					Url:    thumbnail[len(thumbnail)-1].(map[string]interface{})["url"].(string),
-					Width:  fmt.Sprintf("%v", thumbnail[len(thumbnail)-1].(map[string]interface{})["width"]),
-					Height: fmt.Sprintf("%v", thumbnail[len(thumbnail)-1].(map[string]interface{})["height"]),
-				},
-			},
-			IsSuccess: true,
-		}
-
-		return out
-	} else {
-		return VideoParser{
-			IsSuccess: false,
-		}
-	}
 }

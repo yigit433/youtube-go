@@ -19,7 +19,10 @@ import (
 )
 
 func main() {
-    res := youtube.SearchVideos("Jim Yosef Hate You")
+    res := youtube.Search("Nora & Chris, Drenchill Remedy", youtube.SearchOptions{
+      Type: "video",
+      Limit: 15
+    })
 
     fmt.Println(res)
 }
