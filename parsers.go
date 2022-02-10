@@ -18,14 +18,19 @@ func ParseChannel(data interface{}) ChannelParser {
 	if data != nil {
 		navEndpoint := data.(map[string]interface{})["navigationEndpoint"]
 		url := fmt.Sprintf("https://www.youtube.com%s", navEndpoint.(map[string]interface{})["browseEndpoint"].(map[string]interface{})["canonicalBaseUrl"] || navEndpoint.(map[string]interface{})["commandMetadata"].(map[string]interface{})["webCommandMetadata"].(map[string]interface{})["url"])
-		thumbnail := data.(map[string]interface{})["thumbnail"].(map[string]interface{})["thumbnails"]
+		thumbnails := data.(map[string]interface{})["thumbnail"].(map[string]interface{})["thumbnails"]
+		thumbnail := thumbnails.([]interface{})[len(thumbnails.([]interface{}))-1]
 
 		var out ChannelParser
 		out = ChannelParser{
-			Id:          data.(map[string]interface{})["channelId"].(string),
-			Url:         url,
-			Name:        data.(map[string]interface{})["title"].(map[string]interface{})["simpleText"].(string),
-			Icon:        thumbnail.([]interface{})[len(thumbnail.([]interface{}))-1],
+			Id:   data.(map[string]interface{})["channelId"].(string),
+			Url:  url,
+			Name: data.(map[string]interface{})["title"].(map[string]interface{})["simpleText"].(string),
+			Icon: Thumbnail{
+				Url:    thumbnail["url"],
+				Width:  thumbnail["width"],
+				Height: thumbnail["height"],
+			},
 			Subscribers: data.(map[string]interface{})["subscriberCountText"].(map[string]interface{})["simpleText"],
 		}
 	} else {
