@@ -16,26 +16,19 @@ func ParsePlaylist(data interface{}) PlaylistParser {
 
 func ParseChannel(data interface{}) ChannelParser {
 	if data != nil {
-		navEndpoint := data.(map[string]interface{})["navigationEndpoint"]
-		var url string
-		if navEndpoint.(map[string]interface{})["browseEndpoint"].(map[string]interface{})["canonicalBaseUrl"] {
-			url = fmt.Sprintf("https://www.youtube.com%s", navEndpoint.(map[string]interface{})["browseEndpoint"].(map[string]interface{})["canonicalBaseUrl"])
-		} else if navEndpoint.(map[string]interface{})["commandMetadata"].(map[string]interface{})["webCommandMetadata"].(map[string]interface{})["url"] {
-			url = fmt.Sprintf("https://www.youtube.com%s", navEndpoint.(map[string]interface{})["commandMetadata"].(map[string]interface{})["webCommandMetadata"].(map[string]interface{})["url"])
-		}
-
 		thumbnails := data.(map[string]interface{})["thumbnail"].(map[string]interface{})["thumbnails"]
 		thumbnail := thumbnails.([]interface{})[len(thumbnails.([]interface{}))-1]
 
 		var out ChannelParser
 		out = ChannelParser{
-			Id:   data.(map[string]interface{})["channelId"].(string),
-			Url:  url,
-			Name: data.(map[string]interface{})["title"].(map[string]interface{})["simpleText"].(string),
-			Icon: Thumbnail{
-				Url:    fmt.Sprintf("%v", thumbnail["url"]),
-				Width:  fmt.Sprintf("%v", thumbnail["width"]),
-				Height: fmt.Sprintf("%v", thumbnail["height"]),
+			Channel: Channel{
+				Id:   data.(map[string]interface{})["channelId"].(string),
+				Name: data.(map[string]interface{})["title"].(map[string]interface{})["simpleText"].(string),
+				Icon: Thumbnail{
+					Url:    thumbnail["url"].(string),
+					Width:  thumbnail["width"].(string),
+					Height: thumbnail["height"].(string),
+				},
 			},
 			Subscribers: data.(map[string]interface{})["subscriberCountText"].(map[string]interface{})["simpleText"],
 		}
