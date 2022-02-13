@@ -83,7 +83,7 @@ func ParseHTML(html string, limit int) []SearchResult {
 				})
 			}
 		} else if val, ok := sdata["channelRenderer"]; ok {
-			parsed := ParseVideo(val)
+			parsed := ParseChannel(val)
 
 			if parsed.IsSuccess {
 				output = append(output, SearchResult{
