@@ -53,10 +53,9 @@ func ParseHTML(html string, limit int) []SearchResult {
 	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
 	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
 	parsed := strings.Split(items, `},{"continuationItemRenderer":{`)[0]
-	html := []byte(string(parsed))
 
 	var out map[string]interface{}
-	err = json.Unmarshal(html, &out)
+	err := json.Unmarshal([]byte(string(parsed)), &out)
 
 	if err != nil {
 		panic("Something went wrong, the problem was encountered while analyzing JSON!")
@@ -67,27 +66,27 @@ func ParseHTML(html string, limit int) []SearchResult {
 	for i := 0; len(arr) > i; i++ {
 		sdata := arr[i].(map[string]interface{})
 
-		if sdata["videoRenderer"] {
-			parsed := ParseVideo(sdata["videoRenderer"])
+		if val, ok := sdata["videoRenderer"]; ok {
+			parsed := ParseVideo(val)
 
 			if parsed.IsSuccess {
-				output = append(output, &SearchResult{
+				output = append(output, SearchResult{
 					Video: parsed.Video,
 				})
 			}
-		} else if sdata["playlistRenderer"] {
-			parsed := ParsePlaylist(sdata["playlistRenderer"])
+		} else if val, ok := sdata["playlistRenderer"]; ok {
+			parsed := ParsePlaylist(val)
 
 			if parsed.IsSuccess {
-				output = append(output, &SearchResult{
+				output = append(output, SearchResult{
 					Playlist: parsed.Playlist,
 				})
 			}
-		} else if sdata["channelRenderer"] {
-			parsed := ParseVideo(sdata["channelRenderer"])
+		} else if val, ok := sdata["channelRenderer"]; ok {
+			parsed := ParseVideo(val)
 
 			if parsed.IsSuccess {
-				output = append(output, &SearchResult{
+				output = append(output, SearchResult{
 					Channel: parsed.Channel,
 				})
 			}
