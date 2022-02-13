@@ -40,7 +40,7 @@ type PlaylistParser struct {
 type SearchResult struct {
 	Video
 	Playlist
-	Channels
+	Channel
 }
 
 type SearchOptions struct {

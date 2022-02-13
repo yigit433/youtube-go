@@ -46,7 +46,7 @@ func CreateRequest(searchWord string, options SearchOptions) []SearchResult {
 		log.Fatalf("Cannot read the body stream.")
 	}
 
-	return ParseHTML(bodyResp, options.Limit)
+	return ParseHTML(string(bodyResp), options.Limit)
 }
 
 func ParseHTML(html string, limit int) []SearchResult {

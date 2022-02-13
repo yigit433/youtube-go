@@ -25,9 +25,9 @@ func ParseChannel(data interface{}) ChannelParser {
 				Id:   data.(map[string]interface{})["channelId"].(string),
 				Name: data.(map[string]interface{})["title"].(map[string]interface{})["simpleText"].(string),
 				Icon: Thumbnail{
-					Url:    thumbnail["url"].(string),
-					Width:  thumbnail["width"].(string),
-					Height: thumbnail["height"].(string),
+					Url:    thumbnail.(map[string]interface{})["url"].(string),
+					Width:  thumbnail.(map[string]interface{})["width"].(string),
+					Height: thumbnail.(map[string]interface{})["height"].(string),
 				},
 				Subscribers: data.(map[string]interface{})["subscriberCountText"].(map[string]interface{})["simpleText"].(string),
 			},
