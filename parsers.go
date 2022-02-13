@@ -29,9 +29,11 @@ func ParseChannel(data interface{}) ChannelParser {
 					Width:  thumbnail["width"].(string),
 					Height: thumbnail["height"].(string),
 				},
+				Subscribers: data.(map[string]interface{})["subscriberCountText"].(map[string]interface{})["simpleText"],
 			},
-			Subscribers: data.(map[string]interface{})["subscriberCountText"].(map[string]interface{})["simpleText"],
 		}
+
+		return out
 	} else {
 		return ChannelParser{
 			IsSuccess: false,

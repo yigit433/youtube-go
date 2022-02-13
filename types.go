@@ -15,7 +15,7 @@ type VideoParser struct {
 }
 
 type Channel struct {
-	Thumbnail
+	Icon                       Thumbnail
 	Id, Url, Name, Subscribers string
 	Verified                   bool
 }
