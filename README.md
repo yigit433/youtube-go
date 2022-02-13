@@ -20,8 +20,8 @@ import (
 
 func main() {
     res := youtube.Search("Nora & Chris, Drenchill Remedy", youtube.SearchOptions{
-      Type: "video",
-      Limit: 15
+      Type: "video", // channel , playlist , all
+      Limit: 15,
     })
 
     fmt.Println(res)

@@ -63,7 +63,11 @@ func ParseHTML(html string, limit int) []SearchResult {
 	arr := out["contents"].([]interface{})
 	output := []SearchResult{}
 
-	for i := 0; len(arr) > i; i++ {
+	if limit == 0 {
+		limit = len(arr)
+	}
+
+	for i := 0; limit > i; i++ {
 		sdata := arr[i].(map[string]interface{})
 
 		if val, ok := sdata["videoRenderer"]; ok {
