@@ -53,7 +53,7 @@ func ParseHTML(html string, limit int) []SearchResult {
 	index := len(strings.Split(html, `{"itemSectionRenderer":`)) - 1
 	items := strings.Split(html, `{"itemSectionRenderer":`)[index]
 	parsed := strings.Split(items, `},{"continuationItemRenderer":{`)[0]
-	html := []byte(ParseHTML(string(parsed)))
+	html := []byte(string(parsed))
 
 	var out map[string]interface{}
 	err = json.Unmarshal(html, &out)
