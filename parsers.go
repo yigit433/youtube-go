@@ -31,6 +31,7 @@ func ParseChannel(data interface{}) ChannelParser {
 				},
 				Subscribers: data.(map[string]interface{})["subscriberCountText"].(map[string]interface{})["simpleText"].(string),
 			},
+			IsSuccess: true,
 		}
 
 		return out
