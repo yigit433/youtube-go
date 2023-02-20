@@ -6,7 +6,7 @@ A Go package prepared for Video searching on youtube.
 
 ## Installation
 ```bash
-go mod init project_name && go get github.com/SherlockYigit/youtube-go
+go mod init project_name && go get github.com/yigit433/youtube-go
 ```
 
 ## Example
@@ -15,7 +15,7 @@ package main
 
 import (
     "fmt"
-    youtube "github.com/SherlockYigit/youtube-go"
+    youtube "github.com/yigit433/youtube-go"
 )
 
 func main() {
