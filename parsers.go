@@ -26,8 +26,8 @@ func ParseChannel(data interface{}) ChannelParser {
 				Name: data.(map[string]interface{})["title"].(map[string]interface{})["simpleText"].(string),
 				Icon: Thumbnail{
 					Url:    thumbnail.(map[string]interface{})["url"].(string),
-					Width:  thumbnail.(map[string]interface{})["width"].(string),
-					Height: thumbnail.(map[string]interface{})["height"].(string),
+					Width:  thumbnail.(map[string]interface{})["width"].(float64),
+					Height: thumbnail.(map[string]interface{})["height"].(float64),
 				},
 				Subscribers: data.(map[string]interface{})["subscriberCountText"].(map[string]interface{})["simpleText"].(string),
 			},
@@ -55,8 +55,8 @@ func ParseVideo(data interface{}) VideoParser {
 				Thumbnail: Thumbnail{
 					Id:     data.(map[string]interface{})["videoId"].(string),
 					Url:    thumbnail[len(thumbnail)-1].(map[string]interface{})["url"].(string),
-					Width:  fmt.Sprintf("%v", thumbnail[len(thumbnail)-1].(map[string]interface{})["width"]),
-					Height: fmt.Sprintf("%v", thumbnail[len(thumbnail)-1].(map[string]interface{})["height"]),
+					Width:  thumbnail[len(thumbnail)-1].(map[string]interface{})["width"].(float64),
+					Height: thumbnail[len(thumbnail)-1].(map[string]interface{})["height"].(float64),
 				},
 			},
 			IsSuccess: true,

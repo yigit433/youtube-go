@@ -1,7 +1,8 @@
 package youtubego
 
 type Thumbnail struct {
-	Id, Width, Height, Url string
+	Id, Url       string
+	Width, Height float64
 }
 
 type Video struct {
