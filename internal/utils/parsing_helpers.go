@@ -21,8 +21,8 @@ func ParsePlaylist(data interface{}) models.PlaylistParser {
 
 	// Parse the rest of the data
 	playlist := models.Playlist{
-		ID:       getStringValue(data, "playlistId"),
-		Title:    getStringValue(data, "title", "simpleText"),
+		ID:    getStringValue(data, "playlistId"),
+		Title: getStringValue(data, "title", "simpleText"),
 		Thumbnail: models.Thumbnail{
 			Url:    getStringValue(thumbnail, "url"),
 			Width:  getFloat64Value(thumbnail, "width"),
@@ -52,9 +52,9 @@ func ParseChannel(data interface{}) models.ChannelParser {
 
 	// Parse the rest of the data
 	channel := models.Channel{
-		ID:          getStringValue(data, "channelId"),
-		Name:        getStringValue(data, "title", "simpleText"),
-		Icon:        models.Thumbnail{
+		ID:   getStringValue(data, "channelId"),
+		Name: getStringValue(data, "title", "simpleText"),
+		Icon: models.Thumbnail{
 			Url:    getStringValue(thumbnail, "url"),
 			Width:  getFloat64Value(thumbnail, "width"),
 			Height: getFloat64Value(thumbnail, "height"),
@@ -85,7 +85,7 @@ func ParseVideo(data interface{}) models.VideoParser {
 	// Parse the rest of the data
 	video := models.Video{
 		ID:    getStringValue(data, "videoId"),
-		Title: getStringValue(data, "title", "runs", "0", "text"),
+		Title: getStringValue(getArrayValue(data, "title", "runs")[0], "text"),
 		Url:   fmt.Sprintf("https://www.youtube.com/watch?v=%s", getStringValue(data, "videoId")),
 		Thumbnail: models.Thumbnail{
 			ID:     getStringValue(data, "videoId"),
