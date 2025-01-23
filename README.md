@@ -28,12 +28,15 @@ import (
 )
 
 func main() {
-  res := youtubego.Search("ABBA Money, Money, Money", models.SearchOptions{
-    Type: "video", // channel , playlist , all
+  result, err := youtubego.Search("ABBA Money, Money, Money", models.SearchConfig{
+    SearchType: "video", // channel , playlist , all
     Timeout: 10 * time.Second, 
-    MaxResult: 15,
+    MaxResults: 15,
   })
+  if err != nil {
+	panic(err)
+  }
 
-  fmt.Println(res)
+  fmt.Println(result[0].Video.Title)
 }
 ```
