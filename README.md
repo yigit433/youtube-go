@@ -1,29 +1,38 @@
-# Youtube GO
+## Youtube GO
 
 A Go package prepared for Video searching on youtube.
 
 > This project was developed inspired by [youtube-sr](https://github.com/DevAndromeda/youtube-sr)
 
-## Installation
+### Supported
+- ✅ Regular YouTube Search (Video/Channel/Playlist)
+- ✅ Get specific video
+- 🛠 Get Playlist (including all videos)
+- 🛠 YouTube safe search
+
+### Installation
 ```bash
-go mod init project_name && go get github.com/yigit433/youtube-go
+go get github.com/yigit433/youtube-go
 ```
 
-## Example
+### Example
 ```go
 package main
 
 import (
-    "fmt"
-    youtube "github.com/yigit433/youtube-go"
+  "fmt"
+  "time"
+
+  "github.com/yigit433/youtube-go"
 )
 
 func main() {
-    res := youtube.Search("Nora & Chris, Drenchill Remedy", youtube.SearchOptions{
-      Type: "video", // channel , playlist , all
-      Limit: 15,
-    })
+  res := youtubego.Search("ABBA Money, Money, Money", youtube.SearchOptions{
+    Type: "video", // channel , playlist , all
+    Timeout: 10 * time.Second, 
+    MaxResult: 15,
+  })
 
-    fmt.Println(res)
+  fmt.Println(res)
 }
 ```
