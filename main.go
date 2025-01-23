@@ -5,8 +5,8 @@ import (
 	"io"
 	"log"
 
+	"github.com/yigit433/youtube-go/models"
 	"github.com/yigit433/youtube-go/internal/httpClient"
-	"github.com/yigit433/youtube-go/internal/models"
 	"github.com/yigit433/youtube-go/internal/parser"
 	"github.com/yigit433/youtube-go/internal/utils"
 )

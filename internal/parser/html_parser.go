@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/yigit433/youtube-go/internal/models"
+	"github.com/yigit433/youtube-go/models"
 	"github.com/yigit433/youtube-go/internal/utils"
 )
 

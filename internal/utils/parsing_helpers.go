@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"github.com/yigit433/youtube-go/internal/models"
+	"github.com/yigit433/youtube-go/models"
 )
 
 // ParsePlaylist parses the playlist data and returns a PlaylistParser
