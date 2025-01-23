@@ -24,10 +24,11 @@ import (
   "time"
 
   "github.com/yigit433/youtube-go"
+  "github.com/yigit433/youtube-go/models"
 )
 
 func main() {
-  res := youtubego.Search("ABBA Money, Money, Money", youtube.SearchOptions{
+  res := youtubego.Search("ABBA Money, Money, Money", models.SearchOptions{
     Type: "video", // channel , playlist , all
     Timeout: 10 * time.Second, 
     MaxResult: 15,
