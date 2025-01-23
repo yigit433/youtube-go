@@ -1,3 +1,3 @@
-module github.com/SherlockYigit/youtube-go
+module github.com/yigit433/youtube-go
 
-go 1.17
+go 1.23.3
