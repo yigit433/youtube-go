@@ -17,6 +17,6 @@ func GetSearchType(searchType string) string {
 	case "channel":
 		return SearchTypeChannelId
 	default:
-		return SearchTypeVideoId
+		return ""
 	}
 }

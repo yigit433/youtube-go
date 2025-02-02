@@ -14,9 +14,10 @@ import (
 func Search(query string, config models.SearchConfig) ([]models.SearchResult, error) {
 	searchType := utils.GetSearchType(config.SearchType)
 
-	params := map[string]string{
-		"search_query": query,
-		"sp":           searchType,
+	params := map[string]string{"search_query": query}
+
+	if searchType != "" {
+		params["sp"] = searchType
 	}
 
 	url, err := utils.BuildURLWithQueryParams("http://youtube.com/results", params)
